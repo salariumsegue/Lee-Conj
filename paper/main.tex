@@ -22,7 +22,7 @@ and an Improved Linear Finite Cutoff}
 \maketitle
 
 \begin{abstract}
-Lee conjectured in 1989 that every finite tree of odd order is edge-graceful. Mitchem and Simoson introduced the stronger notion of super-edge-graceful labelings, and Lee and Ho (2007) proved that every odd-order tree with exactly three vertices of even degree is super-edge-graceful. We present a complete, independently verifiable computer-assisted proof that every finite tree with exactly $e \in \{3, 5, 7\}$ vertices of even degree is super-edge-graceful, settling Lee's conjecture for these entire infinite classes. The proof combines a structural reduction to finitely many underlying tree shapes ($2$ for $e = 3$, $12$ for $e = 5$, and $116$ for $e = 7$), a Simultaneous Chain-Extension Lemma for rooted signed labelings, and exhaustive binary case-split certificates ($13$, $659$, and $809{,}050$ terminal certificates, respectively), all checked by a standalone zero-dependency Python verifier. Using multi-path magnitude sharing and greedy pair-packing, we also prove a general linear cutoff: for every odd $e \ge 3$, if a tree with $e$ even-degree vertices fails to be super-edge-graceful, then a counterexample exists on at most $25e - 40$ vertices. Combining the $e = 7$ theorem with a two-leaf parity-swap step yields infinite families of super-edge-graceful trees for every odd $e \ge 9$. Finally, we report an exhaustive experimental sweep through order $17$ ($57{,}967$ odd-order trees) showing that every non-path odd-order tree admits a $2$-vertex reduction from a clean three-operation family $\{R_1, R_3, R_4\}$.
+Lee conjectured in 1989 that every finite tree of odd order is edge-graceful. Mitchem and Simoson introduced the stronger notion of super-edge-graceful labelings, and Lee and Ho (2007) proved that every odd-order tree with exactly three vertices of even degree is super-edge-graceful. We present a complete, independently verifiable computer-assisted proof that every finite tree with exactly $e \in \{3, 5, 7\}$ vertices of even degree is super-edge-graceful, settling Lee's conjecture for these entire infinite classes. The proof combines a structural reduction to finitely many underlying tree shapes ($2$ for $e = 3$, $12$ for $e = 5$, and $116$ for $e = 7$), a Simultaneous Chain-Extension Lemma for rooted signed labelings, and exhaustive binary case-split certificates ($13$, $659$, and $809{,}050$ terminal certificates, respectively), all checked by a standalone zero-dependency Python verifier. Using multi-path magnitude sharing, distinctness of child vertex sums and edge labels, and greedy pair-packing, we also prove an improved general linear cutoff: for every odd $e \ge 3$, if a tree with $e$ even-degree vertices fails to be super-edge-graceful, then a counterexample exists on at most $23e - 36$ vertices (giving order $\le 171$ unconditionally at $e = 9$, and $\le 139$ for length-$1$-free $e = 9$ trees via explicit certificates on all $1{,}526$ underlying shapes). Combining the $e = 7$ theorem with a two-leaf parity-swap step yields infinite families of super-edge-graceful trees for every odd $e \ge 9$. Finally, we report an exhaustive experimental sweep through order $17$ ($57{,}967$ odd-order trees) showing that every non-path odd-order tree admits a $2$-vertex reduction from a clean three-operation family $\{R_1, R_3, R_4\}$.
 \end{abstract}
 
 \section{Introduction}
@@ -46,7 +46,7 @@ Every finite tree with exactly $e \in \{3, 5, 7\}$ vertices of even degree is su
 \end{theorem}
 
 \begin{theorem}[General Linear Cutoff]\label{thm:cutoff}
-For every odd integer $e \ge 3$, if there exists a finite tree with exactly $e$ vertices of even degree that is not super-edge-graceful, then such a tree exists on at most $25e - 40$ vertices.
+For every odd integer $e \ge 3$, if there exists a finite tree with exactly $e$ vertices of even degree that is not super-edge-graceful, then such a tree exists on at most $23e - 36$ vertices.
 \end{theorem}
 
 \begin{corollary}[Infinite Families for All Odd $e \ge 9$]\label{cor:inf}
@@ -150,13 +150,23 @@ $e$ & Underlying shapes & Max order & Exhaustive splits & Terminal certificates 
 \section{Proof of Theorem~\ref{thm:cutoff} and Corollary~\ref{cor:inf}}
 
 \begin{proof}[Proof of Theorem~\ref{thm:cutoff}]
-Let $T$ be a minimal counterexample with $e \ge 3$ even-degree vertices. Then $T$ has no sibling leaves and arises from an underlying shape $T_0$ ($|V(T_0)| \le 3e - 2$, $r \le 2e - 3$ by Proposition~\ref{prop:shape-bounds}). Absorb all length-$1$ chains into $T_0$ to form $T_1$, leaving $k \le r$ open edges with lengths $m_j \ge 2$ and total $M = \sum_{j=1}^k m_j$. If $k = 0$, then $|V(T)| \le (3e - 2) + 2(2e - 3) = 7e - 8 \le 25e - 40$.
+Let $T$ be a minimal counterexample with $e \ge 3$ even-degree vertices. Then $T$ has no sibling leaves and arises from an underlying shape $T_0$ ($|V(T_0)| \le 3e - 2$, $r \le 2e - 3$ by Proposition~\ref{prop:shape-bounds}). Absorb all length-$1$ chains into $T_0$ to form $T_1$, leaving $k \le r$ open edges with lengths $m_j \ge 2$ and total $M = \sum_{j=1}^k m_j$. If $k = 0$, then $|V(T)| \le (3e - 2) + 2(2e - 3) = 7e - 8 \le 23e - 36$.
 
-Otherwise $k \ge 1$, so $T_1$ has strictly smaller order $n_1 \le (3e - 2) + 2(r - k) \le 7e - 8 - 2k$ and by minimality admits an SEG labeling $f$. For any root $R$, every open edge satisfies $d_j = |f^*(c_j) - f(p_j, c_j)| \le 2h_1 = n_1 - 1$. Placing $k$ disjoint pairs $(x_j, x_j + d_j) \subseteq \{1, \dots, M\}$ greedily, at step $j$ the $2(j-1)$ occupied elements block at most $4(j-1)$ of the $M - d_j$ available pairs. Hence a packing exists whenever $M - (n_1 - 1) > 4(k - 1)$, i.e., $M \ge n_1 + 4k - 4$. By Lemma~\ref{lem:ext}, $M \le n_1 + 4k - 5$, so
+Otherwise $k \ge 1$, so $T_1$ has strictly smaller order $n_1 = 2h_1 + 1 \le (3e - 2) + 2(r - k) \le 7e - 8 - 2k$ and by minimality admits an SEG labeling $f$. Root $T_1$ at any vertex $R$ and sort the open-edge differences in descending order $d_1 \ge d_2 \ge \dots \ge d_k$. Because the $c_i$ are distinct vertices and the $e_i$ are distinct edges, the top $2m+1$ magnitudes in $\{-h_1, \dots, h_1\}$ sum to at most $(2m+1)h_1 - m^2$. Hence
 \[
-|V(T)| = n_1 + 2M \le 3n_1 + 8k - 10 \le 3(7e - 8 - 2k) + 8k - 10 = 21e + 2k - 34 \le 25e - 40. \qedhere
+(2m+1) d_{2m+1} \le \sum_{i=1}^{2m+1} \bigl(|f^*(c_i)| + |f(e_i)|\bigr) \le 2(2m+1)h_1 - 2m^2,
+\]
+which gives $d_{2m+1} \le 2h_1 - \lceil 2m^2/(2m+1) \rceil = 2h_1 - m$, and therefore $d_j \le 2h_1 - \lfloor (j-1)/2 \rfloor = n_1 - 1 - \lfloor (j-1)/2 \rfloor$ for every $1 \le j \le k$.
+
+Placing the $k$ disjoint pairs $(x_j, x_j + d_j) \subseteq \{1, \dots, M\}$ greedily in descending order $d_1, \dots, d_k$, at step $j$ the $2(j-1)$ occupied elements block at most $4(j-1)$ of the $M - d_j$ candidate pairs. A packing therefore exists whenever $M \ge d_j + 4(j-1) + 1$ for all $1 \le j \le k$, which is guaranteed by $M \ge n_1 + 4(k-1) - \lfloor (k-1)/2 \rfloor = n_1 + \lceil 7(k-1)/2 \rceil$. By Lemma~\ref{lem:ext}, a minimal counterexample satisfies $M \le n_1 + \lceil 7(k-1)/2 \rceil - 1$, so $2M \le 2n_1 + 7k - 8$ for all $k \ge 1$, and $2M \le 2n_1 + 7k - 9$ whenever $k$ is odd (in particular when $k = 2e - 3$). Consequently,
+\[
+|V(T)| = n_1 + 2M \le \begin{cases} 3(7e - 8 - 2k) + 7k - 9 = 21e + k - 33 = 23e - 36 & (k = 2e - 3), \\ 3(7e - 8 - 2k) + 7k - 8 = 21e + k - 32 \le 23e - 36 & (k \le 2e - 4). \end{cases} \qedhere
 \]
 \end{proof}
+
+\begin{remark}[Explicit $e = 9$ Base Certificates]
+Theorem~\ref{thm:cutoff} bounds any $e = 9$ counterexample unconditionally by order $23(9) - 36 = 171$. In addition, we computed and verified rooted SEG labelings for all $1{,}526$ underlying tree shapes of $e = 9$ (\texttt{data/shapes\_e9.json}, \texttt{data/certs\_e9\_base.txt.gz}), achieving $\max d_j \le 11$ across all shapes. Thus every $e = 9$ tree with all chain lengths in $\{0\} \cup [12, \infty)$ is super-edge-graceful, and every length-$1$-free $e = 9$ tree of order $> 139$ is super-edge-graceful by greedy multi-path packing.
+\end{remark}
 
 \begin{proof}[Proof of Corollary~\ref{cor:inf}]
 Let $T$ be any SEG tree of order $n = 2h + 1 \ge 2e + 3$ ($h \ge e + 1$) with $e$ even-degree vertices. Partition $\{-h, \dots, -1, 1, \dots, h\}$ into the $h$ disjoint pairs $(-h, 1), (-h+1, 2), \dots, (-1, h)$, each differing by $h + 1$. The $e$ even-degree vertices block at most $e$ pairs, so at least one pair $(s, s + h + 1)$ consists of two odd-degree vertices $u, v$. Attaching leaves to $u$ and $v$ with edge labels $+(h+1)$ and $-(h+1)$ swaps their vertex sums, supplies new leaf sums $\pm(h+1)$, fixes all other sums, and increases the even-degree count to $e + 2$. Applying Theorem~\ref{thm:main} ($e = 7$, $n \ge 17$) and iterating yields the corollary.
