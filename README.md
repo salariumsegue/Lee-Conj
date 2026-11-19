@@ -1,5 +1,7 @@
 # Super-Edge-Graceful Trees with $e \in \{3, 5, 7\}$ Even-Degree Vertices & Sharp $23e - 36$ Linear Cutoff
 
+[[https://zenodo.org/badge/DOI/10.5281/zenodo.24382630.svg]](https://doi.org/10.5281/zenodo.24382630)
+
 A complete, independently verifiable computer-assisted proof that **every finite tree with exactly 3, 5, or 7 vertices of even degree is super-edge-graceful**, and consequently satisfies **Lee's Edge-Graceful Tree Conjecture**, together with a sharpened **$23e - 36$** general linear finite cutoff for all odd $e \ge 3$, verified base certificates for all **1,526 underlying shapes of $e = 9$**, an infinite-family extension to all odd $e \ge 9$, a pure Lean 4 formalization of the core lemmas, and an exhaustive order-17 experimental sweep of the `{R1, R3, R4}` reduction.
 
 ## Verified Results
