@@ -1,11 +1,11 @@
-name: Verify Super-Edge-Graceful Tree Proofs (e = 3, 5, 7)
+name: Verify Proofs, Lean 4, and Build Paper PDF
 
 on:
   push:
   pull_request:
 
 jobs:
-  verify:
+  verify-certificates:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,3 +18,29 @@ jobs:
         run: python3 verify_proof.py --e 5 --shapes data/shapes_e5.json --certs data/certs_e5.bin.xz --spot-check 100
       - name: Verify e = 7 (116 shapes, 809,050 certs + constructive spot-checks)
         run: python3 verify_proof.py --e 7 --shapes data/shapes_e7.json --certs data/certs_e7.bin.xz --spot-check 500
+
+  typecheck-lean4:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean 4 via elan
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain leanprover/lean4:stable
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+      - name: Type-check lean/SimultaneousExtension.lean
+        run: lean lean/SimultaneousExtension.lean
+
+  build-paper-pdf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile paper/main.tex to PDF
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: main.tex
+          working_directory: paper
+      - name: Upload compiled PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-pdf
+          path: paper/main.pdf
