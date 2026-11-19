@@ -1,0 +1,234 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+\title{Super-Edge-Graceful Trees with Five and Seven Even-Degree Vertices\\
+and an Improved Linear Finite Cutoff}
+\author{Niall Gillen}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Lee conjectured in 1989 that every finite tree of odd order is edge-graceful. Mitchem and Simoson introduced the stronger notion of super-edge-graceful labelings, and Lee and Ho (2007) proved that every odd-order tree with exactly three vertices of even degree is super-edge-graceful. We present a complete, independently verifiable computer-assisted proof that every finite tree with exactly $e \in \{3, 5, 7\}$ vertices of even degree is super-edge-graceful, settling Lee's conjecture for these entire infinite classes. The proof combines a structural reduction to finitely many underlying tree shapes ($2$ for $e = 3$, $12$ for $e = 5$, and $116$ for $e = 7$), a Simultaneous Chain-Extension Lemma for rooted signed labelings, and exhaustive binary case-split certificates ($13$, $659$, and $809{,}050$ terminal certificates, respectively), all checked by a standalone zero-dependency Python verifier. Using multi-path magnitude sharing and greedy pair-packing, we also prove a general linear cutoff: for every odd $e \ge 3$, if a tree with $e$ even-degree vertices fails to be super-edge-graceful, then a counterexample exists on at most $25e - 40$ vertices. Combining the $e = 7$ theorem with a two-leaf parity-swap step yields infinite families of super-edge-graceful trees for every odd $e \ge 9$. Finally, we report an exhaustive experimental sweep through order $17$ ($57{,}967$ odd-order trees) showing that every non-path odd-order tree admits a $2$-vertex reduction from a clean three-operation family $\{R_1, R_3, R_4\}$.
+\end{abstract}
+
+\section{Introduction}
+
+Let $T = (V, E)$ be a finite tree of order $n = |V|$ and size $q = |E| = n - 1$. A graph $G = (V, E)$ is \emph{edge-graceful} (Lo~\cite{Lo1985}) if there exists a bijection $f : E(G) \to \{1, 2, \dots, q\}$ such that the induced vertex sums $f^+(v) = \sum_{u \sim v} f(uv) \pmod{n}$ are pairwise distinct modulo $n$. A necessary condition for a tree to be edge-graceful is that $n$ is odd. Lee~\cite{Lee1989} conjectured that every tree of odd order is edge-graceful.
+
+To attack Lee's conjecture, Mitchem and Simoson~\cite{MitchemSimoson1994} introduced \emph{super-edge-graceful} (SEG) labelings. For a tree $T$ of odd order $n = 2h + 1$ ($q = 2h$), a bijection
+\[
+f : E(T) \longrightarrow \{\pm 1, \pm 2, \dots, \pm h\}
+\]
+is \emph{super-edge-graceful} if its induced integer vertex sums
+\[
+f^*(v) = \sum_{u \sim v} f(uv)
+\]
+form a bijection $f^* : V(T) \to \{0, \pm 1, \pm 2, \dots, \pm h\}$. Reducing $f$ and $f^*$ modulo $2h+1$ immediately yields an edge-graceful labeling.
+
+Since $\sum_{v \in V} \deg(v) = 2(n-1)$ is even, a tree has odd order if and only if its number $e$ of even-degree vertices is odd. Lee and Ho~\cite{LeeHo2007} proved that every odd-order tree with $e = 3$ even-degree vertices is super-edge-graceful. Our main results extend this classification to $e = 5$ and $e = 7$, tighten the general finite cutoff for arbitrary odd $e$, and yield infinite families beyond $e = 7$.
+
+\begin{theorem}[Complete Closure for $e \in \{3, 5, 7\}$]\label{thm:main}
+Every finite tree with exactly $e \in \{3, 5, 7\}$ vertices of even degree is super-edge-graceful, and hence edge-graceful.
+\end{theorem}
+
+\begin{theorem}[General Linear Cutoff]\label{thm:cutoff}
+For every odd integer $e \ge 3$, if there exists a finite tree with exactly $e$ vertices of even degree that is not super-edge-graceful, then such a tree exists on at most $25e - 40$ vertices.
+\end{theorem}
+
+\begin{corollary}[Infinite Families for All Odd $e \ge 9$]\label{cor:inf}
+Every tree of order at least $17$ with $e = 7$ even-degree vertices admits a two-leaf extension to a super-edge-graceful tree with $e = 9$ even-degree vertices. Iterating this step produces infinite families of super-edge-graceful trees for every odd $e \ge 9$.
+\end{corollary}
+
+\section{Structural Reduction to Underlying Tree Shapes}
+
+Let $T$ be a finite tree with $e \ge 3$ even-degree vertices.
+
+\subsection{Removing Sibling-Leaf Pairs}
+If two leaves $\ell_1, \ell_2$ share the same parent $v$, deleting $\ell_1$ and $\ell_2$ removes two odd-degree vertices and reduces $\deg(v)$ by $2$, preserving $e$. Conversely, by Mitchem and Simoson's Growing Tree Algorithm~\cite{MitchemSimoson1994}, attaching $\ell_1, \ell_2$ back to $v$ with edge labels $+(h+1)$ and $-(h+1)$ leaves $f^*(v)$ unchanged and gives the new leaves sums $\pm(h+1)$, preserving super-edge-gracefulness. Iterating this step yields a tree $T'$ with $e$ even-degree vertices in which every vertex has at most one leaf neighbor.
+
+\subsection{Shortening Chains of Leaf-Bearing Degree-3 Vertices}
+In a sibling-leaf-free tree $T'$, let $I(T')$ be the set of internal vertices ($\deg \ge 2$), $L(T')$ the set of leaves ($\deg = 1$), $d_k$ the number of degree-$k$ vertices, and $u$ the number of internal vertices with no leaf neighbor. Since every internal vertex has $0$ or $1$ leaf neighbors, $|L(T')| = |I(T')| - u$. Comparing with the handshaking identity $|L(T')| = 2 + \sum_{\deg(v) \ge 3}(\deg(v) - 2)$ yields
+\begin{equation}\label{eq:u}
+u = d_2 - 2 - \sum_{\deg(v) \ge 4} (\deg(v) - 3).
+\end{equation}
+
+Suppose $v \in I(T')$ has $\deg(v) = 3$ and carries a leaf neighbor $\ell$. Because $T'$ has no sibling leaves, the other two neighbors $x, y$ of $v$ are both internal vertices. Replacing the path $x - v - y$ by the single edge $xy$ and deleting $v, \ell$ preserves the degrees of $x$ and $y$, introduces no sibling leaves, and removes two odd-degree vertices, preserving $e$. Repeating until no leaf-bearing degree-$3$ vertex remains yields an \emph{underlying tree shape} $T_0$.
+
+\begin{proposition}\label{prop:shape-bounds}
+Every underlying tree shape $T_0$ with $e \ge 3$ even-degree vertices satisfies
+\[
+2 \le |I(T_0)| \le 2e - 2 \qquad \text{and} \qquad |V(T_0)| \le 3e - 2.
+\]
+\end{proposition}
+
+\begin{proof}
+A star has at most one even-degree vertex, so $|I(T_0)| \ge 2$. Every surviving internal vertex of $T_0$ has degree $2$, degree $\ge 4$, or degree $3$ with no leaf neighbor (hence $d_3 \le u$). By~\eqref{eq:u},
+\[
+|I(T_0)| = d_2 + d_{\ge 4} + d_3 \le d_2 + d_{\ge 4} + u = 2d_2 - 2 - \sum_{\deg(v) \ge 4}(\deg(v) - 4) \le 2d_2 - 2 \le 2e - 2.
+\]
+Moreover, using $|L(T_0)| = 2 + d_3 + \sum_{\deg(v) \ge 4}(\deg(v) - 2)$ and $d_3 \le u$,
+\begin{align*}
+|V(T_0)| &= |I(T_0)| + |L(T_0)| = d_2 + 2 + 2d_3 + \sum_{\deg(v) \ge 4}(\deg(v) - 1) \\
+&\le 3d_2 - 2 + d_4 - \sum_{\deg(v) \ge 5}(\deg(v) - 5) \le 3(d_2 + d_4) - 2 \le 3e - 2. \qedhere
+\end{align*}
+\end{proof}
+
+Exhaustive enumeration of all non-isomorphic internal trees on $2 \le m \le 2e - 2$ vertices together with allowable leaf attachments ($1$ leaf on each internal leaf, $0$ leaves on each internal degree-$2$ vertex, and $0$ or $1$ leaf on each internal vertex of degree $\ge 3$) gives:
+\begin{itemize}
+\item $e = 3$: $2$ shapes, $\max |V(T_0)| = 7$, $r = |I(T_0)| - 1 \le 3$;
+\item $e = 5$: $12$ shapes, $\max |V(T_0)| = 13$, $r \le 7$;
+\item $e = 7$: $116$ shapes, $\max |V(T_0)| = 19$, $r \in \{6, 7, 8, 9, 10, 11\}$;
+\item $e = 9$: $1{,}526$ shapes, $\max |V(T_0)| = 25$, $r \in \{8, \dots, 15\}$.
+\end{itemize}
+Every finite tree with $e$ even-degree vertices is obtained from one of its underlying shapes $T_0$ by choosing chain lengths $(m_0, \dots, m_{r-1}) \in \mathbb{Z}_{\ge 0}^r$ on the $r$ internal edges of $T_0$ and restoring sibling-leaf pairs.
+
+\section{Simultaneous Chain-Extension Lemma}
+
+\begin{lemma}[Simultaneous Chain Extension]\label{lem:ext}
+Let $T$ be a tree of odd order $n = 2h + 1$ with an SEG labeling $f : E(T) \to \{\pm 1, \dots, \pm h\}$ and induced vertex sums $f^*$. Root $T$ at a vertex $R$, orienting each edge $e_j$ from parent $p_j$ to child $c_j$. For a subset $O \subseteq E(T)$, set $\Delta_j = f^*(c_j) - f(p_j, c_j)$ and $d_j = |\Delta_j|$. Let $(m_j)_{j \in O} \in \mathbb{Z}_{\ge 0}^O$, with active set $S = \{j \in O : m_j > 0\}$ and total $M = \sum_{j \in S} m_j$. If
+\begin{enumerate}
+\item $m_j \ge 2$ for every $j \in S$ with $d_j > 0$, and
+\item there exist pairwise disjoint pairs $(x_j, x_j + d_j) \subseteq \{1, 2, \dots, M\}$ for all $j \in S$ with $d_j > 0$,
+\end{enumerate}
+then the tree $T'$ obtained by simultaneously inserting a chain of $m_j$ leaf-bearing degree-$3$ vertices along each edge $e_j$ ($j \in S$) is super-edge-graceful.
+\end{lemma}
+
+\begin{proof}
+Shift the reserved pairs to $t_1^{(j)} = h + x_j$ and $t_2^{(j)} = h + x_j + d_j$ inside $\{h+1, \dots, h+M\}$ for each $j \in S$ with $d_j > 0$. Partition the remaining magnitudes of $\{h+1, \dots, h+M\}$ arbitrarily so that each $j \in S$ with $d_j > 0$ receives $m_j - 2$ magnitudes $u_1^{(j)}, \dots, u_{m_j - 2}^{(j)}$, and each $j \in S$ with $d_j = 0$ receives $m_j$ magnitudes $u_1^{(j)}, \dots, u_{m_j}^{(j)}$.
+
+On each $e_j = (p_j, c_j)$ ($j \in S$) with old label $a = f(p_j, c_j)$, replace $(p_j, c_j)$ by $p_j - v_1 - \dots - v_{m_j} - c_j$ with pendant leaves $\ell_k$ at $v_k$, keeping $f(p_j, v_1) = a$:
+\begin{itemize}
+\item If $d_j = 0$ ($f^*(c_j) = a$): assign spine edges $e_k = +u_k^{(j)}$ and leaf edges $w_k = -u_k^{(j)}$ ($1 \le k \le m_j$). Then $f^*(v_1) = a = f^*(c_j)$, $f^*(v_k) = +u_{k-1}^{(j)}$ ($2 \le k \le m_j$), $f^*(\ell_k) = -u_k^{(j)}$, and $f^*_{\text{new}}(c_j) = +u_{m_j}^{(j)}$.
+\item If $d_j > 0$: set $\sigma = \operatorname{sgn}(\Delta_j)$, spine edges $(e_1, \dots, e_{m_j}) = (\sigma t_2^{(j)}, \sigma u_1^{(j)}, \dots, \sigma u_{m_j - 2}^{(j)}, \sigma t_1^{(j)})$, and leaf edges $(w_1, \dots, w_{m_j}) = (-\sigma t_1^{(j)}, -\sigma t_2^{(j)}, -\sigma u_1^{(j)}, \dots, -\sigma u_{m_j - 2}^{(j)})$. Then $f^*(v_1) = a + \sigma(t_2^{(j)} - t_1^{(j)}) = f^*(c_j)$, $f^*(v_k) = \sigma u_{k-1}^{(j)}$ ($2 \le k \le m_j - 1$), $f^*(v_{m_j}) = \sigma t_1^{(j)}$, $f^*_{\text{new}}(c_j) = \Delta_j + \sigma t_1^{(j)} = \sigma t_2^{(j)}$, and the leaves yield $-\sigma t_1^{(j)}, -\sigma t_2^{(j)}, -\sigma u_k^{(j)}$.
+\end{itemize}
+Because $T$ is rooted at $R$, no vertex is the child endpoint $c_j$ of two distinct edges in $O$, and every parent endpoint $p_j$ retains its original incident edge label $a$. Thus all extensions act independently on vertex sums, producing $\{0, \pm 1, \dots, \pm(h+M)\}$.
+\end{proof}
+
+\begin{remark}[Block Condition]\label{rem:block}
+If $m_j \ge d_j + 1$ for every $j \in S$, partitioning $\{1, \dots, M\}$ into disjoint contiguous blocks of length $m_j$ and choosing $(x_j, x_j + d_j)$ inside block $j$ automatically satisfies Lemma~\ref{lem:ext}.
+\end{remark}
+
+\section{Proof of Theorem~\ref{thm:main} ($e \in \{3, 5, 7\}$)}
+
+For each underlying shape $T_0$ with $r$ internal edges, we cover $\mathbb{Z}_{\ge 0}^r$ by a finite binary decision tree:
+\begin{enumerate}
+\item At the root, every internal edge $i \in \{0, \dots, r-1\}$ is in state $\mathrm{OPEN}(1)$, denoting $m_i \in \{0\} \cup [1, \infty) = \mathbb{Z}_{\ge 0}$.
+\item Each internal split node selects an edge $i$ in state $\mathrm{OPEN}(L)$ and partitions $\{0\} \cup [L, \infty)$ exhaustively into a left child $\mathrm{FIXED}(L)$ ($m_i = L$, absorbed into the concrete tree) and a right child $\mathrm{OPEN}(L+1)$ ($m_i \in \{0\} \cup [L+1, \infty)$).
+\item Each terminal leaf provides a root $R$ and signed edge labeling $f$ of the concrete tree $T$ such that $f$ is SEG and $d_j \le L_j - 1$ for every remaining open edge $j$, covering its entire orthant by Remark~\ref{rem:block}.
+\end{enumerate}
+
+The certificates were generated by a multithreaded C++17 simulated-annealing solver and independently verified from scratch by a standalone zero-dependency Python~3 checker (\texttt{verify\_proof.py}), which re-enumerates all underlying shapes, verifies every split is exhaustive, checks every leaf labeling and extension inequality, and performs randomized constructive tree-materialization spot-checks.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{rrrrrr}
+\toprule
+$e$ & Underlying shapes & Max order & Exhaustive splits & Terminal certificates & Verifier time \\
+\midrule
+3 & 2 & 7 & 11 & 13 & 0.00 s \\
+5 & 12 & 13 & 647 & 659 & 0.01 s \\
+7 & 116 & 19 & 808,934 & 809,050 & 28.24 s \\
+\bottomrule
+\end{tabular}
+\caption{Verified certificate counts for Theorem~\ref{thm:main} using compact binary LZMA certificates (\texttt{.bin.xz}). Constructive spot-checks directly verified materialized extended trees up to orders $41$ ($e=3$), $77$ ($e=5$), and $157$ ($e=7$).}
+\end{table}
+
+\section{Proof of Theorem~\ref{thm:cutoff} and Corollary~\ref{cor:inf}}
+
+\begin{proof}[Proof of Theorem~\ref{thm:cutoff}]
+Let $T$ be a minimal counterexample with $e \ge 3$ even-degree vertices. Then $T$ has no sibling leaves and arises from an underlying shape $T_0$ ($|V(T_0)| \le 3e - 2$, $r \le 2e - 3$ by Proposition~\ref{prop:shape-bounds}). Absorb all length-$1$ chains into $T_0$ to form $T_1$, leaving $k \le r$ open edges with lengths $m_j \ge 2$ and total $M = \sum_{j=1}^k m_j$. If $k = 0$, then $|V(T)| \le (3e - 2) + 2(2e - 3) = 7e - 8 \le 25e - 40$.
+
+Otherwise $k \ge 1$, so $T_1$ has strictly smaller order $n_1 \le (3e - 2) + 2(r - k) \le 7e - 8 - 2k$ and by minimality admits an SEG labeling $f$. For any root $R$, every open edge satisfies $d_j = |f^*(c_j) - f(p_j, c_j)| \le 2h_1 = n_1 - 1$. Placing $k$ disjoint pairs $(x_j, x_j + d_j) \subseteq \{1, \dots, M\}$ greedily, at step $j$ the $2(j-1)$ occupied elements block at most $4(j-1)$ of the $M - d_j$ available pairs. Hence a packing exists whenever $M - (n_1 - 1) > 4(k - 1)$, i.e., $M \ge n_1 + 4k - 4$. By Lemma~\ref{lem:ext}, $M \le n_1 + 4k - 5$, so
+\[
+|V(T)| = n_1 + 2M \le 3n_1 + 8k - 10 \le 3(7e - 8 - 2k) + 8k - 10 = 21e + 2k - 34 \le 25e - 40. \qedhere
+\]
+\end{proof}
+
+\begin{proof}[Proof of Corollary~\ref{cor:inf}]
+Let $T$ be any SEG tree of order $n = 2h + 1 \ge 2e + 3$ ($h \ge e + 1$) with $e$ even-degree vertices. Partition $\{-h, \dots, -1, 1, \dots, h\}$ into the $h$ disjoint pairs $(-h, 1), (-h+1, 2), \dots, (-1, h)$, each differing by $h + 1$. The $e$ even-degree vertices block at most $e$ pairs, so at least one pair $(s, s + h + 1)$ consists of two odd-degree vertices $u, v$. Attaching leaves to $u$ and $v$ with edge labels $+(h+1)$ and $-(h+1)$ swaps their vertex sums, supplies new leaf sums $\pm(h+1)$, fixes all other sums, and increases the even-degree count to $e + 2$. Applying Theorem~\ref{thm:main} ($e = 7$, $n \ge 17$) and iterating yields the corollary.
+\end{proof}
+
+\section{Experimental Evidence Toward an Unrestricted Induction}
+
+While Theorem~\ref{thm:main} settles fixed $e \in \{3, 5, 7\}$, an unrestricted proof of Lee's conjecture requires a reduction that does not branch exponentially in $e$. We tested a combined three-operation $2$-vertex reduction $\{R_1, R_3, R_4\}$ across all $57{,}967$ non-isomorphic odd-order trees of orders $n \in \{5, 7, 9, 11, 13, 15, 17\}$:
+\begin{itemize}
+\item ($R_1$) \emph{Sibling-leaf removal}: delete two leaves sharing a parent (always preserves SEG).
+\item ($R_3$) \emph{Pendant-$P_2$ removal}: delete a pendant path $v_1 - v_0$ attached to $v_2$ (extends by $\pm h$ whenever $T - \{v_0, v_1\}$ admits an SEG labeling with $f^*(v_2) = 0$).
+\item ($R_4$) \emph{Two-leaf parity swap}: delete two leaves at distinct parents $u, v$ (extends by $\pm h$ whenever $T - \{\ell_1, \ell_2\}$ admits an SEG labeling with $|f^*(u) - f^*(v)| = h$).
+\end{itemize}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{rrrrrr}
+\toprule
+Order $n$ & Total trees & Sibling-free non-path & Covered by $R_3$ & Covered by $R_4$ fallback & Failures \\
+\midrule
+7 & 11 & 2 & 1 & 1 & 0 \\
+9 & 47 & 9 & 6 & 3 & 0 \\
+11 & 235 & 38 & 31 & 7 & 0 \\
+13 & 1,301 & 166 & 144 & 22 & 0 \\
+15 & 7,741 & 765 & 691 & 74 & 0 \\
+17 & 48,629 & 3,725 & 3,448 & 277 & 0 \\
+\bottomrule
+\end{tabular}
+\caption{Exhaustive sweep of $\{R_1, R_3, R_4\}$ across all non-path odd-order trees through order $17$. Odd paths $P_{2h+1}$ are independently proved super-edge-graceful in~\cite{Cichacz2008}.}
+\end{table}
+
+At orders $15$ and $17$, a sharp structural dichotomy emerged: \emph{every single} sibling-free non-path tree possessing at least one pendant $P_2$ attached to a vertex $v_2$ of degree $\ge 3$ ($691/691$ at $n=15$, and $3{,}448/3{,}448$ at $n=17$) admitted an $R_3$ reduction, while every remaining tree ($74/74$ at $n=15$, and $277/277$ at $n=17$) had all pendant paths of length $\ge 3$ and admitted an $R_4$ reduction. Establishing this two-part dichotomy inductively remains an open problem.
+
+\section{Reproducibility}
+
+All code, underlying shapes, compact binary LZMA certificates (\texttt{.bin.xz}), and the standalone verifier are available in the companion repository:
+\begin{verbatim}
+python3 verify_proof.py --e 3 --shapes data/shapes_e3.json --certs data/certs_e3.bin.xz --spot-check 10
+python3 verify_proof.py --e 5 --shapes data/shapes_e5.json --certs data/certs_e5.bin.xz --spot-check 100
+python3 verify_proof.py --e 7 --shapes data/shapes_e7.json --certs data/certs_e7.bin.xz --spot-check 500
+\end{verbatim}
+
+\begin{thebibliography}{9}
+\bibitem{Cichacz2008}
+S.~Cichacz, D.~Froncek, and P.~Kov\'a\v{r},
+\emph{Super edge-graceful paths},
+arXiv:0804.3640 (2008).
+
+\bibitem{Gallian}
+J.~A.~Gallian,
+\emph{A dynamic survey of graph labeling},
+Electron.\ J.\ Combin.\ \textbf{DS6} (continuously updated).
+
+\bibitem{Lee1989}
+S.-M.~Lee,
+\emph{A conjecture on edge-graceful trees},
+Scientia Ser.\ A \textbf{3} (1989), 45--57.
+
+\bibitem{LeeHo2007}
+S.-M.~Lee and Y.-S.~Ho,
+\emph{All trees of odd order with three even vertices are super edge-graceful},
+J.\ Combin.\ Math.\ Combin.\ Comput.\ \textbf{62} (2007), 53--64.
+
+\bibitem{Lo1985}
+S.~P.~Lo,
+\emph{On edge-graceful labelings of graphs},
+Congr.\ Numer.\ \textbf{50} (1985), 231--241.
+
+\bibitem{MitchemSimoson1994}
+J.~Mitchem and A.~Simoson,
+\emph{On edge-graceful and super edge-graceful labelings of graphs},
+Ars Combin.\ \textbf{37} (1994), 97--111.
+\end{thebibliography}
+
+\end{document}

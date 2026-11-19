@@ -1,0 +1,6 @@
+solver
+*.o
+__pycache__/
+*.pyc
+.DS_Store
+certs_*.txt

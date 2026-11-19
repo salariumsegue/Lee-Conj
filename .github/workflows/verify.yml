@@ -1,0 +1,20 @@
+name: Verify Super-Edge-Graceful Tree Proofs (e = 3, 5, 7)
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify e = 3 (2 shapes + constructive spot-checks)
+        run: python3 verify_proof.py --e 3 --shapes data/shapes_e3.json --certs data/certs_e3.bin.xz --spot-check 10
+      - name: Verify e = 5 (12 shapes + constructive spot-checks)
+        run: python3 verify_proof.py --e 5 --shapes data/shapes_e5.json --certs data/certs_e5.bin.xz --spot-check 100
+      - name: Verify e = 7 (116 shapes, 809,050 certs + constructive spot-checks)
+        run: python3 verify_proof.py --e 7 --shapes data/shapes_e7.json --certs data/certs_e7.bin.xz --spot-check 500
