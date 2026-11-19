@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use these proofs, certificates, or verification scripts, please cite this repository."
+title: "Super-Edge-Graceful Trees with Five and Seven Even-Degree Vertices and an Improved Linear Cutoff"
+authors:
+  - family-names: "Gillen"
+    given-names: "Niall"
+version: "1.0.0"
+date-released: "2026-11-19"
+license: "MIT"
+repository-code: "https://github.com/salariumsegue/Lee-Conj"
+keywords:
+  - "edge-graceful"
+  - "super-edge-graceful"
+  - "Lee's conjecture"
+  - "graph labeling"
+  - "computer-assisted proof"
+  - "Lean 4"
