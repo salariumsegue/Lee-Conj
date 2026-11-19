@@ -13,8 +13,8 @@
 \newtheorem{definition}[theorem]{Definition}
 \newtheorem{remark}[theorem]{Remark}
 
-\title{Super-Edge-Graceful Trees with Five and Seven Even-Degree Vertices\\
-and an Improved Linear Finite Cutoff}
+\title{Super-Edge-Graceful Trees with Five and Seven\\
+Even-Degree Vertices and an Improved Linear Cutoff}
 \author{Niall Gillen}
 \date{\today}
 
@@ -202,12 +202,17 @@ At orders $15$ and $17$, a sharp structural dichotomy emerged: \emph{every singl
 
 \section{Reproducibility}
 
-All code, underlying shapes, compact binary LZMA certificates (\texttt{.bin.xz}), and the standalone verifier are available in the companion repository:
+All code, underlying shapes, compact binary LZMA certificates (\texttt{.bin.xz}), the Lean~4 formalization (\texttt{lean/SimultaneousExtension.lean}), and the standalone verifier are available at \url{https://github.com/salariumsegue/Lee-Conj}:
+{\small
 \begin{verbatim}
-python3 verify_proof.py --e 3 --shapes data/shapes_e3.json --certs data/certs_e3.bin.xz --spot-check 10
-python3 verify_proof.py --e 5 --shapes data/shapes_e5.json --certs data/certs_e5.bin.xz --spot-check 100
-python3 verify_proof.py --e 7 --shapes data/shapes_e7.json --certs data/certs_e7.bin.xz --spot-check 500
+python3 verify_proof.py --e 3 --shapes data/shapes_e3.json \
+    --certs data/certs_e3.bin.xz --spot-check 10
+python3 verify_proof.py --e 5 --shapes data/shapes_e5.json \
+    --certs data/certs_e5.bin.xz --spot-check 100
+python3 verify_proof.py --e 7 --shapes data/shapes_e7.json \
+    --certs data/certs_e7.bin.xz --spot-check 500
 \end{verbatim}
+}
 
 \begin{thebibliography}{9}
 \bibitem{Cichacz2008}
