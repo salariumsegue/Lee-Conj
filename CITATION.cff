@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use these proofs, certificates, or verification scripts, please cite this repository."
-title: "Super-Edge-Graceful Trees with Five and Seven Even-Degree Vertices and an Improved Linear Cutoff"
+title: "Super-Edge-Graceful Trees with Five and Seven Even-Degree Vertices and a Linear Cutoff"
 authors:
   - family-names: "Gillen"
     given-names: "Niall"
